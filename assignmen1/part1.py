@@ -1,35 +1,31 @@
-import requests
 from bs4 import BeautifulSoup
+import requests
 import re
 
-url = "https://ic2s2-2023.org/program"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+LINK = "https://ic2s2-2023.org/program"
+r = requests.get(LINK)
+soup = BeautifulSoup(r.content)
+navlist = soup.find_all("ul", {"class": "nav_list"})
+names_list = [] # stores the group of people taken from each sub-field
+for i_tag in soup.find_all("i"): # Extract text from <i>, including <u> content
+    raw_text = i_tag.get_text(separator="", strip=True)  # Ensures consistent comma separation
+    names_list.append(raw_text)
 
-unique_names = set()
+names = [] # stores the final list
+for group in names_list: # goes through each group that is found
+    group = group.split(",") # splits it up
+    for name in group: # goes through all the names found in the given group
+        # Remove "Chair: " prefix if it appears (handles multiple cases)
+        cleaned_text = re.sub(r'\bChair:\s*', '', name).strip(" ")
+        names.append(cleaned_text)
 
-# Search for all <li> tags as an example,
-# Assuming participant names frequently appear in list items (including keynote, chair, talk author, poster author, etc.)
-for li in soup.find_all("li"):
-    text = li.get_text(separator=" ", strip=True)
-    # Match patterns containing at least two words with capitalized first letters (a simple way to identify possible full names)
-    matches = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b', text)
-    for match in matches:
-        name = match.strip(" ,;:")
-        unique_names.add(name)
+names = list(dict.fromkeys(names)) # Converting our set to a dictionary and back removes duplicates
 
-print("Found {} unique researchers.".format(len(unique_names)))
+# Output the number of unique researchers found
+print(f"Found {len(names)} unique researchers.")
 
-# Save results to a file
+# Save the results to a text file
 with open("IC2S2_2023_researchers.txt", "w", encoding="utf-8") as f:
-    for name in sorted(unique_names):
+    for name in sorted(names):
         f.write(name + "\n")
-#I started by inspecting the IC2S2 2023 program page in a browser to determine where participant names are located;
-# they typically appear within list items. Using BeautifulSoup’s find_all method,
-# I extracted all <li> tags and applied a regular expression to capture names that follow the "First Last" format,
-# ensuring at least two words with capitalized initials.
-# I then cleaned the extracted strings to remove extra punctuation and whitespace.
-# To avoid duplicates caused by minor spelling variations, I stored the names in a set.
-# Finally, I saved the unique names to a text file. Manual verification and iterative regex adjustments
-# were used to ensure that the names are both complete and accurate.
-# In my test, I obtained approximately 125 unique researchers.
+
