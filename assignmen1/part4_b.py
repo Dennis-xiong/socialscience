@@ -1,14 +1,9 @@
 import pandas as pd
-import networkx as nx
-import json
 import ast
-import statistics
+import networkx as nx
 from itertools import combinations
 from networkx.readwrite import json_graph
-
-# -------------------------
-# Part 1: Network Construction
-# -------------------------
+import json
 
 # 1. Load data
 authors_df = pd.read_csv("IC2S2_2024_Computational_Social_Scientists.csv")
@@ -32,7 +27,10 @@ G = nx.Graph()
 G.add_weighted_edges_from(weighted_edgelist)
 
 # 4. Add node attributes
+# Handle duplicate 'id' column and ensure uniqueness
+authors_df = authors_df.drop_duplicates(subset="id", keep="first")
 author_metadata = authors_df.set_index("id").to_dict(orient="index")
+
 for node in G.nodes:
     G.nodes[node].update(author_metadata.get(node, {}))
 
@@ -55,11 +53,10 @@ for author, stats in author_stats.items():
 
 # 6. Save network
 with open("Computational_Social_Scientists_Network.json", "w") as f:
-    json.dump(json_graph.node_link_data(G, edges="links"), f)
-
+    json.dump(json_graph.node_link_data(G), f)
 
 # -------------------------
-# Part 2: Network Analysis
+# Network Analysis Section
 # -------------------------
 
 def analyze_network(G):
@@ -94,7 +91,7 @@ def analyze_network(G):
         }
     })
 
-    # Top authors
+    # Top authors by degree
     top_degree = sorted(degrees.items(), key=lambda x: x[1], reverse=True)[:5]
     results["top_authors"] = [
         (G.nodes[author]["display_name"], degree)
@@ -102,7 +99,6 @@ def analyze_network(G):
     ]
 
     return results
-
 
 # Execute analysis
 analysis_results = analyze_network(G)
@@ -118,27 +114,18 @@ Network Metrics:
 - Isolated nodes: {analysis_results['isolated_nodes']}
 
 Degree Analysis:
-Average degree: {analysis_results['degree_stats']['mean']:.1f}
-Median degree: {analysis_results['degree_stats']['median']}
-Mode degree: {analysis_results['degree_stats']['mode']}
-Degree range: {analysis_results['degree_stats']['min']}-{analysis_results['degree_stats']['max']}
+- Average degree: {analysis_results['degree_stats']['mean']:.1f}
+- Median degree: {analysis_results['degree_stats']['median']}
+- Mode degree: {analysis_results['degree_stats']['mode']}
+- Degree range: {analysis_results['degree_stats']['min']}-{analysis_results['degree_stats']['max']}
 
 Weighted Degree Analysis:
-Average strength: {analysis_results['strength_stats']['mean']:.1f}
-Median strength: {analysis_results['strength_stats']['median']}
-Mode strength: {analysis_results['strength_stats']['mode']}
-Strength range: {analysis_results['strength_stats']['min']}-{analysis_results['strength_stats']['max']}
+- Average strength: {analysis_results['strength_stats']['mean']:.1f}
+- Median strength: {analysis_results['strength_stats']['median']}
+- Mode strength: {analysis_results['strength_stats']['mode']}
+- Strength range: {analysis_results['strength_stats']['min']}-{analysis_results['strength_stats']['max']}
 
 Top 5 Authors by Degree:
 """)
 for idx, (name, degree) in enumerate(analysis_results['top_authors'], 1):
     print(f"{idx}. {name} (Degree: {degree})")
-
-# Discussion
-print("""
-Discussion:
-1. The network density is typically very low (<0.01), consistent with the sparse nature of real-world collaboration networks
-2. The network is usually disconnected with multiple connected components, reflecting distinct research communities
-3. Degree distribution shows typical right-skew characteristics, with few core authors acting as network hubs
-4. Top authors are typically well-known scholars or institutional leaders in the field
-""")
