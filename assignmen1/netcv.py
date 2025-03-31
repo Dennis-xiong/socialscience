@@ -5,6 +5,7 @@ import ast
 from itertools import combinations
 from netwulf import visualize
 from networkx.readwrite import json_graph
+import matplotlib.pyplot as plt
 
 # -------------------------
 # 1. 数据加载与列名修复（关键修复点）
@@ -120,15 +121,25 @@ for node in G_lcc.nodes:
     G_lcc.nodes[node]["label"] = G_lcc.nodes[node]["display_name"]
 
 # -------------------------
-# 6. 可视化执行（兼容旧版 Netwulf）
+# 6. 可视化执行
 # -------------------------
 try:
-    visualize(G_lcc, config=config, filter_labels=True)  # 新版参数
+    # 新版参数
+    visualize(G_lcc, config=config)  # 不传递保存路径
 except TypeError:
-    visualize(G_lcc, config=config)  # 旧版兼容
+    # 旧版兼容
+    visualize(G_lcc, config=config)
 
 # -------------------------
 # 7. 保存网络数据
 # -------------------------
 with open("Computational_Social_Scientists_Network.json", "w") as f:
     json.dump(json_graph.node_link_data(G_lcc), f, indent=2)
+
+# -------------------------
+# 8. 使用 matplotlib 保存网络图像
+# -------------------------
+# 通过 matplotlib 保存图像
+plt.figure(figsize=(12, 12))
+plt.savefig("Computational_Social_Scientists_Network_Netwulf.png", format="PNG", dpi=300)
+plt.close()

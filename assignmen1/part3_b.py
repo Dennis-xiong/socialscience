@@ -99,10 +99,3 @@ else:
     print("No data retrieved, cannot compute unique researchers.")
 print(authors_df.columns)
 
-# ## Efficiency in Code (150 words)
-#
-# I enhanced efficiency by making batch requests (25 authors per request) and setting per-page=200 to reduce API calls. I also applied filters directly in the request (cited_by_count:>10, authors_count:<10, concepts.id) to improve data retrieval speed. Parallel processing with n_jobs=2, combined with time.sleep(1), ensures compliance with the 10 requests/second rate limit. The checks for "has_social" and "has_quant" were removed to avoid redundant filtering. In the end, 8855 papers across 14 author groups were retrieved in 39 seconds, close to the target 30 seconds for a 5-core machine. The dual-core version is slightly slower but still efficient. The use of batching and parallelism significantly reduced execution time, ensuring fast data collection.
-#
-# Filtering Criteria and Dataset Relevance (150 words)
-#
-# The filtering criteria (works count between 5-5000, cited_by_count >10, authors_count <10, specific Concepts) target active and impactful research in computational social science (CSS). The work count filter ensures active authors, the citation threshold ensures impact, and the author count limit reduces noise. The Concepts filter focuses on intersections between social sciences (sociology, psychology) and quantitative sciences (mathematics, computer science). However, removing "has_social" and "has_quant" might result in data that overrepresents single-field research, weakening the cross-disciplinary nature of CSS. Adjusting the filter to stricter intersections or more detailed Concepts could improve relevance but may reduce dataset size. The current dataset of 8855 papers balances breadth and focus.

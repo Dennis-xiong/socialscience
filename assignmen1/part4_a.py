@@ -2,54 +2,57 @@ import pandas as pd
 import networkx as nx
 import json
 import ast
-import math
-import statistics
 from itertools import combinations
 from networkx.readwrite import json_graph
 
 # -------------------------
-# 1. 加载作者数据
+# 1. Load Author Data
 # -------------------------
-# 假设作者 CSV 中的列名为 "id:"、"display_name:"、"works_api_url:"、"h_index:"、"works_count:"、"country--code:"
+# Assuming the author CSV contains columns: "id:", "display_name:", "works_api_url:",
+# "h_index:", "works_count:", "country--code:"
 authors_df = pd.read_csv("IC2S2_2024_Computational_Social_Scientists.csv")
-# 去除列名末尾的冒号
+# Remove trailing colons from column names
 authors_df.columns = [col.rstrip(":") for col in authors_df.columns]
 
 # -------------------------
-# 2. 加载论文数据
+# 2. Load Paper Data
 # -------------------------
-# 假设论文 CSV 中有一列 "author_ids" 存储作者 ID 列表，格式为字符串，例如：'["https://openalex.org/A123", "https://openalex.org/A456"]'
+# Assuming the paper CSV has an "author_ids" column storing author ID lists as strings,
+# e.g.: '["https://openalex.org/A123", "https://openalex.org/A456"]'
 papers_df = pd.read_csv("IC2S2_papers.csv")
+
 def parse_author_ids(x):
     try:
         return ast.literal_eval(x)
     except Exception:
         return []
+
 papers_df["author_ids_parsed"] = papers_df["author_ids"].apply(parse_author_ids)
 
 # -------------------------
-# 3. 构建加权边列表
+# 3. Build Weighted Edge List
 # -------------------------
-# 遍历论文，生成所有作者对（无序组合），统计共同合作论文数作为边权
+# Process papers to generate author pairs (unordered combinations),
+# count co-authored papers as edge weights
 edge_dict = {}
 for idx, row in papers_df.iterrows():
     authors = row["author_ids_parsed"]
     if len(authors) > 1:
         for pair in combinations(authors, 2):
-            # 排序后构造元组，保证 (A, B) 与 (B, A) 是同一对
+            # Sort to ensure (A, B) and (B, A) are treated as the same pair
             sorted_pair = tuple(sorted(pair))
             edge_dict[sorted_pair] = edge_dict.get(sorted_pair, 0) + 1
 
 weighted_edgelist = [(u, v, weight) for (u, v), weight in edge_dict.items()]
 
 # -------------------------
-# 4. 构建网络及添加节点属性
+# 4. Build Network & Add Node Attributes
 # -------------------------
 G = nx.Graph()
 
-# 4.1 添加所有作者节点（孤立作者也加入图中）
+# 4.1 Add all author nodes (including isolated ones)
 for idx, row in authors_df.iterrows():
-    author_id = row["id"]  # 包含完整前缀
+    author_id = row["id"]  # Contains full prefix
     G.add_node(author_id)
     G.nodes[author_id]["display_name"] = row["display_name"]
     G.nodes[author_id]["works_api_url"] = row["works_api_url"]
@@ -57,13 +60,13 @@ for idx, row in authors_df.iterrows():
     G.nodes[author_id]["works_count"] = row["works_count"]
     G.nodes[author_id]["country"] = row["country--code"]
 
-# 4.2 添加合作边
+# 4.2 Add collaboration edges
 G.add_weighted_edges_from(weighted_edgelist)
 
 # -------------------------
-# 5. 聚合论文数据添加额外节点属性
+# 5. Add Paper-derived Node Attributes
 # -------------------------
-# 统计每位作者的总引用数和最早发表年份
+# Calculate total citations and earliest publication year per author
 author_stats = {}
 for idx, row in papers_df.iterrows():
     authors = row["author_ids_parsed"]
@@ -84,7 +87,7 @@ for author, stats in author_stats.items():
         else:
             G.nodes[author]["first_publication_year"] = None
 
-# 对于没有统计数据的作者，设默认值
+# Set defaults for authors without paper data
 for author in G.nodes:
     if "total_citations" not in G.nodes[author]:
         G.nodes[author]["total_citations"] = 0
@@ -92,10 +95,14 @@ for author in G.nodes:
         G.nodes[author]["first_publication_year"] = None
 
 # -------------------------
-# 6. 保存网络为 JSON
+# 6. Save Network as JSON
 # -------------------------
-# 显式设置 edges 参数为 "edges"（保持当前行为），以避免 FutureWarning
-network_data = json_graph.node_link_data(G, edges="edges")
-with open("cientComputational_Social_Sists_Network.json", "w", encoding="utf-8") as f:
+# Generate network data in node-link format
+network_data = json_graph.node_link_data(G)  # 移除 edges="links"
+
+# Save the network data as a JSON file
+with open("Computational_Social_Scientists_Network.json", "w", encoding="utf-8") as f:
     json.dump(network_data, f, ensure_ascii=False, indent=4)
-print("网络已保存到 Computational_Social_Scientists_Network.json")
+
+
+print("Network saved to Computational_Social_Scientists_Network.json")

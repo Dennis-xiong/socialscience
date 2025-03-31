@@ -51,7 +51,6 @@ Alejandro Hermida Carrillo
 Aleksandra Urman
 Alessandra Urbinati
 Alessandro De Gaetano
-Alessandro Flamini
 Alessandro Flammini
 Alessandro Gambetti
 Alessandro Girardini
@@ -206,7 +205,6 @@ Based Approach
 Based Framework
 Based Lexica
 Based Model
-Based Models
 Based News Recommender Systems
 Beatrice Bonami
 Beatrice Rammstedt
@@ -464,7 +462,6 @@ Dilrukshi Gamage
 Dimitra Dimitrakopoulou
 Dimitris Kotzinos
 Dingeman Jan Van
-Diogo Pachecho
 Diogo Pacheco
 Directing Smartphone Use Through
 Disciplinary Grants Garner Deep
@@ -481,7 +478,6 @@ Does Form
 Does Morality Facilitate
 Does Papageno Effect Occur
 Donate Data
-Donated Data
 Dongning Deng
 Dongwoo Lim
 Dorian Quelle
@@ -589,7 +585,6 @@ Ezzat Elokda
 Fabian Baumann
 Fabian Braesemann
 Fabio Carella
-Fabio Carrella
 Fabio Giglietto
 Fabrizio Gilardi
 Fabrizio Lillo
@@ -679,7 +674,6 @@ Gender Pay Gap
 Generated Fake Reviews
 Generating Mobility Networks
 Generating Synthetic Data
-Generative Adversarial Network
 Generative Adversarial Networks
 Generative Deep Learning Models
 Generative Language Models
@@ -716,7 +710,6 @@ Gourab Ghoshal
 Graham Tierney
 Grained Map
 Graph Motifs
-Graph Neural Networks
 Green Transition
 Guangnan Zhu
 Guilherme Lichand
@@ -1228,7 +1221,6 @@ Michele Avalle
 Michele Coscia
 Michele Starnini
 Michele Tizzani
-Michele Tizzoni
 Midterm Candidate Participation
 Migration Conversations
 Miguel Rivera
@@ -1316,7 +1308,6 @@ Network Effects
 Network Games
 Network Motifs
 Network Segregation Bubble Size
-Network Structure
 Network Structures
 Neville Stanton
 News Consumption
@@ -1731,7 +1722,6 @@ Social Media Simulation Using
 Social Movement Formation
 Social Network
 Social Network Analysis
-Social Networks
 Social Networks During
 Social Sciences
 Social Systems
@@ -2014,7 +2004,6 @@ Xiaodan Lou
 Xiaoran Yan
 Xiaowen Dong
 Xiaoya Chen
-Xindi Wang
 Xinlan Emily Hu
 Xinran Wang
 Xinwei Xu
